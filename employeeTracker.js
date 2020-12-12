@@ -1,7 +1,7 @@
 //dependencies
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const { printTable } = require("console-table-printer");
+require("console.table");
 const figlet = require("figlet");
 
 //mySQL connection
@@ -31,20 +31,20 @@ const mainMenu = () => {
         ],
       },
     ])
-    .then((answer) => {
-      if (answer.menu === "View All Employees") {
-        employeesDisplay();
-      } else if (answer.menu === "Add an Employee") {
-        addEmployee();
-      } else if (answer.menu === "Remove an Employee") {
-        removeEmployee();
-      } else if (answer.menu === "Update Employee Role") {
-        updateRole();
-      } else if (answer.menu === "Update Employee Manager") {
-        updateManager();
-      } else if (answer.menu === "Exit") {
-        //close menu and save to db
-        connection.end();
+    .then(({ menu }) => {
+      switch (menu) {
+        case "View All Employees":
+          return employeesDisplay();
+        case "Add an Employee":
+          return addEmployee();
+        case "Remove an Employee":
+          return removeEmployee();
+        case "Update Employee Role":
+          return updateRole();
+        case "Update Employee Manager":
+          return updateManager();
+        case "Exit":
+          connection.end();
       }
     });
 };
@@ -59,33 +59,63 @@ const employeesDisplay = () => {
 };
 
 const addEmployee = () => {
-  inquirer.prompt([
-    {
-      type: "input",
-      name: "first_name",
-      message: "What is the employee's first name?",
-    },
-    {
-      type: "input",
-      name: "last_name",
-      message: "What is the employee's last name?",
-    },
-    {
-      type: "list",
-      name: "roles",
-      message: "What is the employee's role?",
-      choices: [],
-    },
-    {
-      type: "list",
-      name: "manager",
-      message: "Who is the employee's manager?",
-      choices: [],
-    },
-  ]);
-  connection.query("INSERT INTO employee SET ?", employee, (err, res) => {
-    if (err) throw err;
-  });
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "What is the employee's first name?",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "What is the employee's last name?",
+      },
+      {
+        //rawlist from roles table?
+        type: "list",
+        name: "roles",
+        message: "What is the employee's role?",
+        choices: [
+          "Sales Lead",
+          "Sales Person",
+          "Lead Engineer",
+          "Software Engineer",
+          "Accountant",
+          "Legal Team Lead",
+          "Lawyer",
+        ],
+      },
+      {
+        type: "rawlist",
+        name: "manager",
+        //How to add none as an option? Need to display all employees
+        choices() {
+          const managerArray = []; //empty array we push the name of managers.
+          res.forEach(({ first_name }) => {
+            managerArray.push(first_name);
+          });
+          return managerArray;
+        },
+        message: "Who is the employee's manager?",
+      },
+    ])
+    .then(({ first_name, last_name, roles, manager }) => {
+      connection.query(
+        "INSERT INTO employee SET ?",
+        {
+          first_name,
+          last_name,
+          roles,
+          manager,
+        },
+        (err) => {
+          if (err) throw err;
+          console.log(`${first_name} has been added to your employee list!`);
+          mainMenu();
+        }
+      );
+    });
 };
 
 //look at activity 9 in mySQL activities
