@@ -59,6 +59,26 @@ const employeesDisplay = () => {
 };
 
 const addEmployee = () => {
+  //hitting database for employee data
+  let employeeList = ["None"];
+  connection.query(
+    "SELECT first_name, last_name FROM employee",
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      employeeList.push(data);
+      console.log(employeeList);
+    }
+  );
+
+  //hitting database for role data
+  const rolesList = [];
+  connection.query("SELECT title FROM roles", (err, data) => {
+    if (err) throw err;
+    rolesList.push(data);
+    console.log(rolesList);
+  });
+
   inquirer
     .prompt([
       {
@@ -72,35 +92,20 @@ const addEmployee = () => {
         message: "What is the employee's last name?",
       },
       {
-        //rawlist from roles table?
-        type: "list",
+        type: "rawlist",
         name: "roles",
         message: "What is the employee's role?",
-        choices: [
-          "Sales Lead",
-          "Sales Person",
-          "Lead Engineer",
-          "Software Engineer",
-          "Accountant",
-          "Legal Team Lead",
-          "Lawyer",
-        ],
+        choices: rolesList,
       },
       {
         type: "rawlist",
         name: "manager",
-        //How to add none as an option? Need to display all employees
-        choices() {
-          const managerArray = []; //empty array we push the name of managers.
-          res.forEach(({ first_name }) => {
-            managerArray.push(first_name);
-          });
-          return managerArray;
-        },
+        choices: employeeList,
         message: "Who is the employee's manager?",
       },
     ])
     .then(({ first_name, last_name, roles, manager }) => {
+      connection.query("SELECT * FROM roles WHERE ?", (err, data) => {});
       connection.query(
         "INSERT INTO employee SET ?",
         {
