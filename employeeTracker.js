@@ -80,13 +80,12 @@ const addEmployee = () => {
     });
 
     //hitting database for employee data
-    // HOW DO YOU ADD A NONE OPTION????
-    let employeeList = ["None"];
+    let employeeList = [];
     connection.query(
       "SELECT id, first_name, last_name FROM employee",
       (err, datum) => {
         if (err) throw err;
-
+        // employeeList = [...datum];
         employeeList = datum.map((empManagers) => {
           return {
             name: empManagers.first_name + " " + empManagers.last_name,
@@ -115,12 +114,14 @@ const addEmployee = () => {
             {
               type: "list",
               name: "manager_id",
-              choices: employeeList,
+              choices: [...employeeList, "None"],
               message: "Who is the employee's manager?",
             },
           ])
           .then(({ first_name, last_name, role_id, manager_id }) => {
-            // connection.query("SELECT * FROM roles WHERE ?", (err, data) => {});
+            manager_id === "None"
+              ? (manager_id = 0)
+              : (manager_id = manager_id);
             connection.query(
               "INSERT INTO employee SET ?",
               {
@@ -143,7 +144,6 @@ const addEmployee = () => {
   });
 };
 
-//ROLES LIST IS NOT POPULATING
 const addRole = () => {
   connection.query("SELECT id, dept_name FROM department", (err, response) => {
     if (err) throw err;
