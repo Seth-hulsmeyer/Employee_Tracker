@@ -13,7 +13,7 @@ const connection = mysql.createConnection({
   database: "trackerDB",
 });
 
-//main menu function asks user
+//main menu of all options given to user
 const mainMenu = () => {
   inquirer
     .prompt([
@@ -27,6 +27,7 @@ const mainMenu = () => {
           "Add a New Role",
           "Add a New Department",
           "View Departments",
+          "View Roles",
           "Update Employee Role",
           "Remove an Employee",
           "Exit",
@@ -45,6 +46,8 @@ const mainMenu = () => {
           return addDepartment();
         case "View Departments":
           return viewDepartments();
+        case "View Roles":
+          return viewRoles();
         case "Update Employee Role":
           return updateRole();
         case "Remove an Employee":
@@ -67,6 +70,7 @@ const employeesDisplay = () => {
   );
 };
 
+//adds employee to employee table
 const addEmployee = () => {
   //hitting database for role data
   connection.query("SELECT id, title FROM roles", (err, data) => {
@@ -142,6 +146,7 @@ const addEmployee = () => {
   });
 };
 
+//adds role to roles table
 const addRole = () => {
   connection.query("SELECT id, dept_name FROM department", (err, response) => {
     if (err) throw err;
@@ -188,6 +193,7 @@ const addRole = () => {
   });
 };
 
+//adds department to department table
 const addDepartment = () => {
   inquirer
     .prompt([
@@ -212,15 +218,64 @@ const addDepartment = () => {
     );
 };
 
-const viewDepartments = () => {};
+//allows user to view all employees in a chosen department
+const viewDepartments = () => {
+  connection.query("SELECT * FROM department", (err, data) => {
+    if (err) throw err;
+    const deptList = data.map((departArr) => {
+      return {
+        name: departArr.dept_name,
+        // value: departArr.id,
+      };
+    });
+    // console.log(deptList);
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "dept_name",
+          message: "Please choose a department to view.",
+          choices: deptList,
+        },
+      ])
+      .then((answer) => {
+        // console.log(answer);
+        const query =
+          "SELECT employee.id, first_name, last_name, title, dept_name FROM employee LEFT JOIN roles ON employee.role_id = (roles.id) LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = ? ORDER by employee.id";
+        connection.query(query, { dept_name: answer.dept_name }, (err, res) => {
+          console.log(res);
+          if (err) throw err;
+          console.table(res);
+          mainMenu();
+        });
+      });
+  });
+};
+
+//displays all roles
+const viewRoles = () => {
+  connection.query(
+    "SELECT roles.id, title, salary, dept_name FROM roles LEFT JOIN department ON roles.department_id = (department.id)",
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    }
+  );
+};
 
 //look at activity 9 in mySQL activities
+
+//updates an employees role and asks to change manager
 const updateRole = () => {};
 
+//removes an employee from employee table
 const removeEmployee = () => {};
 
+//connection listener
 connection.connect((err) => {
   if (err) throw err;
+  //title display
   figlet("Employee Tracker", function (err, data) {
     if (err) {
       console.log("Something went wrong...");

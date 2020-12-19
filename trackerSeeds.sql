@@ -35,8 +35,22 @@ INSERT INTO roles(title, salary, department_id) VALUES("Sales Lead", 40000.00, 1
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("John", "Doe", 1, null);
 
+USE trackerDB;
 SELECT * FROM employee;
 SELECT * FROM roles;
 SELECT * FROM department;
 
-SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.dept_name FROM department RIGHT JOIN roles ON department.id = roles.department_id RIGHT JOIN employee ON roles.id = employee.role_id;
+SELECT e.id, e.first_name, e.last_name, title, salary, dept_name, CONCAT(m.first_name, ' ', m.last_name)
+AS "Manager" FROM employee e
+LEFT JOIN employee m ON m.id = e.manager_id
+LEFT JOIN roles ON e.role_id = (roles.id)
+LEFT JOIN department ON roles.department_id = (department.id)
+ORDER by e.id;
+
+USE trackerDB;
+SELECT * FROM roles LEFT JOIN department ON roles.department_id = (department.id)
+
+
+SELECT employee.id, first_name, last_name, title, dept_name FROM employee 
+LEFT JOIN roles ON employee.role_id = (roles.id) 
+LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = 'Sales' ORDER by employee.id;
