@@ -33,27 +33,10 @@ INSERT INTO department(dept_name) VALUES ("Sales"), ("Engineering"), ("Finance")
 
 INSERT INTO roles(title, salary, department_id) VALUES("Sales Lead", 40000.00, 1), ('Salesperson', 27000.00, 1), ("Lead Engineer", 75000.00, 2), ("Software Engineer", 50000.00, 2), ("Accountant", 45000.00, 3), ("Legal Team Lead", 100000.00, 4), ("Lawyer", 80000.00, 4); 
 
-INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("John", "Doe", 1, null);
+INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("John", "Doe", 1, null),("Mike", "Chan", 2, 1),("Ashley", "Rodriguez", 3, null),("Kevin", "Tupik", 4, 3),("Malia", "Brown", 3, null),("Sarah", "Lourd", 6, null),("Tom", "Allen", 7, 7);
 
-USE trackerDB;
+-- USE trackerDB;
 SELECT * FROM employee;
 SELECT * FROM roles;
 SELECT * FROM department;
 
-SELECT e.id, e.first_name, e.last_name, title, salary, dept_name, CONCAT(m.first_name, ' ', m.last_name)
-AS "Manager" FROM employee e
-LEFT JOIN employee m ON m.id = e.manager_id
-LEFT JOIN roles ON e.role_id = (roles.id)
-LEFT JOIN department ON roles.department_id = (department.id)
-ORDER by e.id;
-
-USE trackerDB;
-SELECT roles.id, title, salary, dept_name FROM roles LEFT JOIN department ON roles.department_id = (department.id);
-
-USE trackerDB;
-SELECT employee.id, first_name, last_name, title, dept_name FROM employee 
-LEFT JOIN roles ON employee.role_id = (roles.id) 
-LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = 'Sales' ORDER by employee.id;
-
-USE trackerDB;
-UPDATE employee SET role_id = 3 WHERE id = 2;

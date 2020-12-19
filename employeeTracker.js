@@ -322,31 +322,24 @@ const removeEmployee = () => {
       const empArray = res.map((empList) => {
         return {
           name: empList.first_name + " " + empList.last_name,
-          id: empList.id,
+          value: empList.id,
         };
       });
       inquirer
         .prompt([
           {
             type: "list",
-            name: "employee",
+            name: "id",
             message: "Which Employee would you like to remove?",
             choices: empArray,
           },
         ])
-        .then(({ employee }) => {
-          connection.query(
-            "DELETE ? FROM employee",
-            {
-              name: employee,
-              id: id,
-            },
-            (err) => {
-              if (err) throw err;
-              console.log(`${first_name} has been removed from the table`);
-              mainMenu();
-            }
-          );
+        .then(({ id }) => {
+          connection.query("DELETE FROM employee WHERE id = ?", [id], (err) => {
+            if (err) throw err;
+            console.log(`Employee has been removed from the table.`);
+            mainMenu();
+          });
         });
     }
   );
