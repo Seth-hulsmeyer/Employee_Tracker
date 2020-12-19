@@ -225,10 +225,10 @@ const viewDepartments = () => {
     const deptList = data.map((departArr) => {
       return {
         name: departArr.dept_name,
-        // value: departArr.id,
+        id: departArr.id,
       };
     });
-    // console.log(deptList);
+    console.log(deptList);
     inquirer
       .prompt([
         {
@@ -239,9 +239,9 @@ const viewDepartments = () => {
         },
       ])
       .then((answer) => {
-        // console.log(answer);
+        console.log(answer);
         const query =
-          "SELECT employee.id, first_name, last_name, title, dept_name FROM employee LEFT JOIN roles ON employee.role_id = (roles.id) LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = ? ORDER by employee.id";
+          "SELECT employee.id, first_name, last_name, title, dept_name FROM employee LEFT JOIN roles ON employee.role_id = (roles.id) LEFT JOIN department ON roles.department_id = (department.id) WHERE ? ORDER by employee.id";
         connection.query(query, { dept_name: answer.dept_name }, (err, res) => {
           console.log(res);
           if (err) throw err;

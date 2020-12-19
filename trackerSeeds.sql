@@ -48,9 +48,9 @@ LEFT JOIN department ON roles.department_id = (department.id)
 ORDER by e.id;
 
 USE trackerDB;
-SELECT * FROM roles LEFT JOIN department ON roles.department_id = (department.id)
+SELECT roles.id, title, salary, dept_name FROM roles LEFT JOIN department ON roles.department_id = (department.id);
 
-
+USE trackerDB;
 SELECT employee.id, first_name, last_name, title, dept_name FROM employee 
 LEFT JOIN roles ON employee.role_id = (roles.id) 
 LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = 'Sales' ORDER by employee.id;
