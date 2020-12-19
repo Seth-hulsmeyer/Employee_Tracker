@@ -54,3 +54,6 @@ USE trackerDB;
 SELECT employee.id, first_name, last_name, title, dept_name FROM employee 
 LEFT JOIN roles ON employee.role_id = (roles.id) 
 LEFT JOIN department ON roles.department_id = (department.id) WHERE dept_name = 'Sales' ORDER by employee.id;
+
+USE trackerDB;
+UPDATE employee SET role_id = 3 WHERE id = 2;

@@ -228,7 +228,6 @@ const viewDepartments = () => {
         id: departArr.id,
       };
     });
-    console.log(deptList);
     inquirer
       .prompt([
         {
@@ -239,11 +238,9 @@ const viewDepartments = () => {
         },
       ])
       .then((answer) => {
-        console.log(answer);
         const query =
           "SELECT employee.id, first_name, last_name, title, dept_name FROM employee LEFT JOIN roles ON employee.role_id = (roles.id) LEFT JOIN department ON roles.department_id = (department.id) WHERE ? ORDER by employee.id";
         connection.query(query, { dept_name: answer.dept_name }, (err, res) => {
-          console.log(res);
           if (err) throw err;
           console.table(res);
           mainMenu();
@@ -264,13 +261,96 @@ const viewRoles = () => {
   );
 };
 
-//look at activity 9 in mySQL activities
-
 //updates an employees role and asks to change manager
-const updateRole = () => {};
+const updateRole = () => {
+  connection.query(
+    "SELECT id, first_name, last_name FROM employee",
+    (err, res) => {
+      if (err) throw err;
+      const empArray = res.map((empList) => {
+        return {
+          name: empList.first_name + " " + empList.last_name,
+          value: empList.id,
+        };
+      });
+      connection.query("SELECT id, title FROM roles", (error, response) => {
+        if (error) throw error;
+        const newRolesArray = response.map((roleList) => {
+          return {
+            name: roleList.title,
+            value: roleList.id,
+          };
+        });
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "id",
+              message: "What employee's role would you like to change?",
+              choices: empArray,
+            },
+            {
+              type: "list",
+              name: "role_id",
+              message: "Select a New role for this employee",
+              choices: newRolesArray,
+            },
+          ])
+          // return roles to choose from.
+          .then(({ id, role_id }) =>
+            connection.query(
+              "UPDATE employee SET role_id = ? WHERE id = ?",
+              [role_id, id],
+              (err) => {
+                if (err) throw err;
+                console.log(`Employee's role has been updated!`);
+                mainMenu();
+              }
+            )
+          );
+      });
+    }
+  );
+};
 
 //removes an employee from employee table
-const removeEmployee = () => {};
+const removeEmployee = () => {
+  connection.query(
+    "SELECT id, first_name, last_name FROM employee",
+    (err, res) => {
+      if (err) throw err;
+      const empArray = res.map((empList) => {
+        return {
+          name: empList.first_name + " " + empList.last_name,
+          id: empList.id,
+        };
+      });
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            name: "employee",
+            message: "Which Employee would you like to remove?",
+            choices: empArray,
+          },
+        ])
+        .then(({ employee }) => {
+          connection.query(
+            "DELETE ? FROM employee",
+            {
+              name: employee,
+              id: id,
+            },
+            (err) => {
+              if (err) throw err;
+              console.log(`${first_name} has been removed from the table`);
+              mainMenu();
+            }
+          );
+        });
+    }
+  );
+};
 
 //connection listener
 connection.connect((err) => {
