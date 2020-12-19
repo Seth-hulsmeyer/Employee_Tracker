@@ -57,9 +57,8 @@ const mainMenu = () => {
 
 //displays table of current employees
 const employeesDisplay = () => {
-  //create left join? HOW TO GET MANAGERS TO POPULATE
   connection.query(
-    "SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, department.dept_name FROM department RIGHT JOIN roles ON department.id = roles.department_id RIGHT JOIN employee ON roles.id = employee.role_id",
+    "SELECT e.id, e.first_name, e.last_name, title, salary, dept_name, CONCAT(m.first_name, ' ', m.last_name) AS 'Manager' FROM employee e LEFT JOIN employee m ON m.id = e.manager_id LEFT JOIN roles ON e.role_id = (roles.id) LEFT JOIN department ON roles.department_id = (department.id) ORDER by e.id;",
     (err, res) => {
       if (err) throw err;
       console.table(res);
@@ -85,7 +84,6 @@ const addEmployee = () => {
       "SELECT id, first_name, last_name FROM employee",
       (err, datum) => {
         if (err) throw err;
-        // employeeList = [...datum];
         employeeList = datum.map((empManagers) => {
           return {
             name: empManagers.first_name + " " + empManagers.last_name,
