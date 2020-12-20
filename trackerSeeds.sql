@@ -33,7 +33,7 @@ INSERT INTO department(dept_name) VALUES ("Sales"), ("Engineering"), ("Finance")
 
 INSERT INTO roles(title, salary, department_id) VALUES("Sales Lead", 40000.00, 1), ('Salesperson', 27000.00, 1), ("Lead Engineer", 75000.00, 2), ("Software Engineer", 50000.00, 2), ("Accountant", 45000.00, 3), ("Legal Team Lead", 100000.00, 4), ("Lawyer", 80000.00, 4); 
 
-INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("John", "Doe", 1, null),("Mike", "Chan", 2, 1),("Ashley", "Rodriguez", 3, null),("Kevin", "Tupik", 4, 3),("Malia", "Brown", 3, null),("Sarah", "Lourd", 6, null),("Tom", "Allen", 7, 7);
+INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("John", "Doe", 1, null),("Mike", "Chan", 2, 1),("Ashley", "Rodriguez", 3, null),("Kevin", "Tupik", 4, 3),("Malia", "Brown", 5, null),("Sarah", "Lourd", 6, null),("Tom", "Allen", 7, 6);
 
 -- USE trackerDB;
 SELECT * FROM employee;
